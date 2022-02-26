@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+<h1>JSON Builder</h1>
+<pre id="result"></pre>
+</body>
+
+<script src="js/index.js"></script>
+<script>
+    const resultText = document.querySelector('#result')
+    console.log(resultText)
+    // @Test
+    const exampleTable = [
+        ['name', 'type', 'value'],
+        ['sampleObj.name', 'string', 'Juan'],
+        ['sampleObj.age', 'number', '29'],
+        ['sampleObj.address.street', 'string', 'Street 1'],
+        ['sampleObj.address.number', 'number', '3'],
+        ['sampleObj.name', 'string', 'Mike'],
+        ['sampleObj.course[].name', 'string', 'Math'],
+        ['sampleObj.course[].grade', 'number', '9.5'],
+        ['sampleObj.course[].campus.country', 'string', 'MEX'],
+        ['sampleObj.course[].name', 'string', 'Networks'],
+        ['sampleObj.course[].grade', 'number', '8'],
+        ['sampleObj.schedule[].monday[].course', 'string', 'Literature'],
+        ['sampleObj.schedule[].monday[].hour', 'string', '8:00'],
+        ['sampleObj.schedule[].monday[].course', 'string', 'Philosophy'],
+        ['sampleObj.schedule[].monday[].hour', 'string', '14:00'],
+        ['sampleObj.schedule[].tuesday[].course', 'string', 'Algorithms'],
+        ['sampleObj.schedule[].tuesday[].hour', 'string', '9:30'],
+        ['sampleObj.schedule[].tuesday[].course', 'string', 'Philosophy'],
+        ['sampleObj.schedule[].tuesday[].hour', 'string', '12:30'],
+    ]
+    const json = toJson(exampleTable)
+    console.log(json)
+    resultText.textContent = json
+</script>
+
+</html>
