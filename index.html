@@ -9,16 +9,14 @@
 </head>
 
 <body>
-<h1>JSON Builder</h1>
+<h3>JSON Builder</h3>
 <pre id="result"></pre>
 </body>
 
 <script src="js/index.js"></script>
 <script>
-    const resultText = document.querySelector('#result')
-    console.log(resultText)
-    // @Test
-    const exampleTable = [
+    let sampleTable = []
+    sampleTable = [
         ['name', 'type', 'value'],
         ['sampleObj.name', 'string', 'Juan'],
         ['sampleObj.age', 'number', '29'],
@@ -37,10 +35,16 @@
         ['sampleObj.schedule[].tuesday[].course', 'string', 'Algorithms'],
         ['sampleObj.schedule[].tuesday[].hour', 'string', '9:30'],
         ['sampleObj.schedule[].tuesday[].course', 'string', 'Philosophy'],
-        ['sampleObj.schedule[].tuesday[].hour', 'string', '12:30'],
+        ['sampleObj.schedule[].tuesday[].hour', 'string', '12:31'],
     ]
-    const json = toJson(exampleTable)
-    console.log(json)
+    sampleTable = [
+        ['name', 'type', 'value'],
+        ['persona[].cuenta.numeros[].numero', 'string', '56565'],
+        ['persona[].cuenta.numeros[].numero', 'string', '+58+9'],
+        ['persona[].name', 'string', 'Mike'],
+    ]
+    const json = toJson(sampleTable)
+    const resultText = document.querySelector('#result')
     resultText.textContent = json
 </script>
 

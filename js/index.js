@@ -43,37 +43,99 @@ function getFields(matrix) {
 function buildObject(fields) {
     const FIRST_LEVEL = 0
     let objectRoot = {}
-    let treeIndex = []
+    let arrayNodes = []
     fields.forEach(
-        field => (objectRoot = getTree(FIRST_LEVEL, objectRoot, treeIndex, field))
+        field => (objectRoot = getTree(FIRST_LEVEL, objectRoot, arrayNodes, field))
     )
     return objectRoot
 }
 
-// TODO los nombre con corchetes crean arreglos
-// TODO los nombre repetidos crean nuevos objetos
-function getTree(level, root, index, field) {
-    const key = field.path[level]
-/*    if (ARRAY_REGEX.test(key)) {
-        const arrayKey = key.replace(ARRAY_REGEX, EMPTY_STR)
-        if (root[arrayKey] === undefined) {
-            root[arrayKey] = []
+function getTree(level, root, nodes, field) {
+    const {key, isArray} = getKey(field.path[level])
+    if (level === field.path.length - 1) {
+        root[key] = getValue(field)
+    } else if (!isArray) {
+        root[key] = getTree(level + 1, initRoot(root[key]), nodes, field)
+    } else {
+        if (!Array.isArray(root[key])) {
+            root[key] = []
         }
-        if (root[arrayKey][0] === undefined) {
-            root[arrayKey][0] = []
+        const index = getItem(root, key, getKey(field.path[level + 1]).key)
+        root[key][index] = initRoot(root[key][index])
+        root[key][index] = getTree(level + 1, root[key][index], nodes, field)
+        // const node = getNode(key, field.name, root, nodes);
+        // nodes.push(node)
+    }
+    return root
+}
+
+function getItem(root, key, nextKey) {
+    let index = 0
+    while (root[key][index] !== undefined) {
+        if (root[key][index][nextKey] === undefined) {
+            return index
         }
-        root[arrayKey][0] = getTree(level + 1, root[arrayKey][0], index, field)
-    } else {*/
-        if (level === field.path.length - 1) {
-            root[key] = getValue(field)
-        } else {
-            if (root[key] === undefined) {
-                root[key] = {}
-            }
-            root[key] = getTree(level + 1, root[key], index, field)
-        }
+        ++index
+    }
+    // do {
+    //     root[key][index] = initRoot(root[key][index])
+    //     ++index
+    // } while (root[key][index] !== undefined)
+    return index
+}
+
+function initRoot(root) {
+    if (root === undefined ||
+        root === null ||
+        typeof root !== 'object' ||
+        Array.isArray(root)) {
+        return {}
+    } else {
         return root
-    // }
+    }
+}
+
+function getKey(key) {
+    const isArray = ARRAY_REGEX.test(key)
+    return {isArray, key: key.replace(ARRAY_REGEX, EMPTY_STR)}
+}
+
+// TODO primero sacar el parentArray que corresponde al padre arreglo que
+//   todos los nodos tienen en comun, p. e.: root[key][index] = {}
+//  hay que comparar si el padre ya existe y que indices tieen
+//  el level mas la key del paren pueden servir para identificarlo
+//  poner el indice ente los corchetes podria ayudar, el
+//  orden en el que estan declarados los campo ayuda mas
+/*
+* me topo con un campo de arreglo
+* puede ser el primer nodo
+*   creo un arreglo
+*   creo un nodo con el primer indice del arreglo
+*       agrego el campo a este nodo
+* puede existir un nodo
+*   no existe el campo en cuestion
+*       agrego el campo al ULTIMO nodo existente
+*   ya existe el campo en cuestion
+*       creo un nodo con el siguiente indice correspondiente
+*           agrego el campo a este nodo
+* */
+function getNode(key, name, root, nodes) {
+    const previousNodes = nodes.filter(node => node.name === name)
+    if (previousNodes.length === 0) {
+        const index = 0
+        root[key] = []
+        root[key][index] = {}
+        return {key, index, name, root: root[key][index]}
+    } else {
+        const previousIndexes = previousNodes.map(index => index)
+        const lastIndex = previousIndexes.sort((a, b) => b - a)[0]
+        const index = lastIndex + 1
+        if (root[key][index] === undefined) {
+            root[key][index] = {}
+        }
+        const nodeRoot = nodes.filter(node => node.name === name)
+        return {key, index, name, root: root[key][index]}
+    }
 }
 
 function getValue({type, value}) {
